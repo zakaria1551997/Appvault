@@ -4,7 +4,8 @@ import {
   Settings, 
   LogOut, 
   Files,
-  ExternalLink
+  ExternalLink,
+  ShieldAlert
 } from 'lucide-react';
 import { User, ActiveTab } from '../types.ts';
 
@@ -23,6 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   totalSizeBytes,
   onSignOut,
 }) => {
+  const isAdmin = user.id === '1z0gjTL5wFcUnv6ibzmp70L7DW63' || user.role === 'admin';
   // Max storage: 500 MB quota
   const maxStorageBytes = 500 * 1024 * 1024;
   const usagePercent = Math.min(100, Math.round((totalSizeBytes / maxStorageBytes) * 100));
@@ -32,15 +34,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Top Branding & Menu */}
       <div className="flex flex-col">
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-8 px-1 pt-1">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 ring-2 ring-indigo-500/20">
-            <Files className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-8 px-1 pt-1">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 ring-2 ring-indigo-500/20">
+              <Files className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-lg text-white tracking-tight block leading-none">ClientVault</span>
+              <span className="text-[10px] text-slate-400 font-medium">Secure File Vault</span>
+            </div>
           </div>
-          <span className="font-bold text-lg text-white tracking-tight">ClientVault</span>
+
+          {isAdmin && (
+            <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40">
+              ADMIN
+            </span>
+          )}
         </div>
 
         {/* Navigation Items */}
         <nav className="space-y-1.5">
+          {isAdmin && (
+            <button
+              onClick={() => setActiveTab('admin')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                activeTab === 'admin'
+                  ? 'bg-rose-950/60 text-rose-200 border border-rose-800/50 shadow-xs'
+                  : 'text-rose-300/80 hover:bg-slate-800/60 hover:text-white'
+              }`}
+            >
+              <ShieldAlert className="w-4 h-4 text-rose-400" />
+              <span>Admin Console</span>
+            </button>
+          )}
+
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
@@ -50,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }`}
           >
             <LayoutGrid className="w-4 h-4 text-slate-300" />
-            <span>Dashboard</span>
+            <span>{isAdmin ? 'My Personal Files' : 'Dashboard'}</span>
           </button>
 
           <button

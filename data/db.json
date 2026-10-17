@@ -9,22 +9,29 @@
       "company": "Apex Design & Freelance",
       "role": "freelancer",
       "createdAt": "2026-09-17T10:52:09.546Z"
+    },
+    {
+      "id": "1z0gjTL5wFcUnv6ibzmp70L7DW63",
+      "email": "zakaria1551997@gmail.com",
+      "passwordHash": "dde42b676f8e94617be69d33547d1221efa18d8f2de61e6e8acaee048fe319ebd41c031c2d8a68e7aae2edba2cb7e15419b152be1f5ab1f42d25fa2680688088",
+      "salt": "10bbf8ebf31930a6231f73cf536132b1",
+      "name": "ZAKARIA",
+      "company": "DesignerZakaria",
+      "role": "admin",
+      "createdAt": "2026-10-17T17:58:17.275Z"
+    },
+    {
+      "id": "1z0gjTL5wFcUnv6ibzmp70L7DW63",
+      "email": "admin@clientvault.app",
+      "passwordHash": "56377f13363c70c3136939bf65d18c4dfc86bae348fb6696c2249eaed358efbdd5bd363d6a475b3103908f5236dc1c9f5aac3acbefd2b95ffd7770cf4d3de457",
+      "salt": "da21962a9b91826cf94c7337db5cf1a1",
+      "name": "System Admin",
+      "company": "ClientVault Security Ops",
+      "role": "admin",
+      "createdAt": "2026-08-18T18:12:29.895Z"
     }
   ],
   "files": [
-    {
-      "id": "file_1_1792234329547",
-      "userId": "user_sarah_101",
-      "originalName": "Brand_Identity_Guidelines_v2.pdf",
-      "storageName": "file_1_1792234329547_Brand_Identity_Guidelines_v2.pdf",
-      "mimeType": "application/pdf",
-      "sizeBytes": 120,
-      "uploadedAt": "2026-10-16T10:52:09.548Z",
-      "clientName": "Acme Corp",
-      "notes": "Final approved typography, color codes and logo usage specs.",
-      "portalSlug": "acme-corp",
-      "downloadCount": 1
-    },
     {
       "id": "file_2_1792234329548",
       "userId": "user_sarah_101",
@@ -63,6 +70,45 @@
       "notes": "Stakeholder notes collected during last Tuesday client sync.",
       "portalSlug": "bloom-studio",
       "downloadCount": 9
+    },
+    {
+      "id": "file_1792259108046_14f3e2f6",
+      "userId": "user_sarah_101",
+      "originalName": "unnamed.jpg",
+      "storageName": "1792259108036_ab4dfc1dde27_unnamed.jpg",
+      "mimeType": "image/jpeg",
+      "sizeBytes": 412442,
+      "uploadedAt": "2026-10-17T17:45:08.046Z",
+      "clientName": "ClientVault",
+      "notes": "",
+      "portalSlug": "clientvault",
+      "downloadCount": 0
+    },
+    {
+      "id": "file_1792260558869_6f0d86ed",
+      "userId": "1z0gjTL5wFcUnv6ibzmp70L7DW63",
+      "originalName": "unnamed.jpg",
+      "storageName": "1792260558864_c1beb72fc2ca_unnamed.jpg",
+      "mimeType": "image/jpeg",
+      "sizeBytes": 412442,
+      "uploadedAt": "2026-10-17T18:09:18.869Z",
+      "clientName": "ClientVault",
+      "notes": "Logo",
+      "portalSlug": "clientvault",
+      "downloadCount": 0
+    },
+    {
+      "id": "file_1792260584330_bc349cc8",
+      "userId": "1z0gjTL5wFcUnv6ibzmp70L7DW63",
+      "originalName": "CrystalDiskInfo_20261014234106 (1).png",
+      "storageName": "1792260584328_b15badbcdf60_CrystalDiskInfo_20261014234106__1_.png",
+      "mimeType": "image/png",
+      "sizeBytes": 92120,
+      "uploadedAt": "2026-10-17T18:09:44.330Z",
+      "clientName": "ClientVault",
+      "notes": "",
+      "portalSlug": "clientvault",
+      "downloadCount": 1
     }
   ],
   "portals": [
@@ -136,11 +182,6 @@
       "expiresAt": 1793467947977
     },
     {
-      "token": "0d948cf2efd26a44047bc012c59a846bb4674284b13160e646b1a26fdb6bc3f5",
-      "userId": "user_sarah_101",
-      "expiresAt": 1793468373413
-    },
-    {
       "token": "df4bc87c623764d87c3836dd152bf7c29892a3673ebb325de797e3cb206cdb68",
       "userId": "user_sarah_101",
       "expiresAt": 1793468533663
@@ -149,6 +190,21 @@
       "token": "fcf690398f42bc50d31db2613594026a0ff24785d4fb91a137e7a9d4fecd3400",
       "userId": "user_sarah_101",
       "expiresAt": 1793468562176
+    },
+    {
+      "token": "a822762d98ce0d8afa5ef8162ea039f9c5f0ef490aa5af6ab44be43db435a152",
+      "userId": "1z0gjTL5wFcUnv6ibzmp70L7DW63",
+      "expiresAt": 1793470363993
+    },
+    {
+      "token": "d2c080a41751a06f0b6ea96532951ec0ed711f9c58a35f64aa6fad68f099cacb",
+      "userId": "1z0gjTL5wFcUnv6ibzmp70L7DW63",
+      "expiresAt": 1793470391823
+    },
+    {
+      "token": "3a8900c71df52371ea66406154832877dfe36a4827f91de36a2e64b32d2c9f37",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793470422787
     }
   ]
 }

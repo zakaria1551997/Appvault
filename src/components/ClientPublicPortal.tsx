@@ -54,7 +54,8 @@ export const ClientPublicPortal: React.FC<ClientPublicPortalProps> = ({ slug, on
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFiles((prev) => [...prev, ...Array.from(e.target.files)]);
+      const newFiles = Array.from(e.target.files);
+      setSelectedFiles((prev) => [...prev, ...newFiles]);
       setErrorMsg(null);
     }
   };

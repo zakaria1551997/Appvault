@@ -10,10 +10,11 @@ import {
   Building, 
   AlertCircle,
   ShieldCheck,
+  ShieldAlert,
   KeyRound,
   Database
 } from 'lucide-react';
-import { login, register } from '../api.ts';
+import { login, register, loginAsDemoAdmin } from '../api.ts';
 import { User as UserType } from '../types.ts';
 
 interface AuthViewProps {
@@ -69,6 +70,21 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
       onAuthSuccess(user);
     } catch (err: any) {
       setErrorMsg(err.message || 'Could not log in to demo account.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAdminSignIn = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMsg(null);
+      setEmail('admin@clientvault.app');
+      setPassword('admin123');
+      const { user } = await loginAsDemoAdmin();
+      onAuthSuccess(user);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Could not log in to admin account.');
     } finally {
       setIsLoading(false);
     }
@@ -229,18 +245,30 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
             {/* Quick Demo Sign In Box */}
             <div className="mt-6 pt-5 border-t border-slate-800">
               <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 text-center">
-                <p className="text-[11px] text-slate-400 mb-2 font-medium">
-                  Want to test immediately with preloaded files?
+                <p className="text-[11px] text-slate-400 mb-2.5 font-medium">
+                  Instant Test Sign-In Options:
                 </p>
-                <button
-                  type="button"
-                  onClick={handleDemoSignIn}
-                  disabled={isLoading}
-                  className="w-full py-2 px-3 text-xs font-semibold text-blue-300 bg-blue-950/40 hover:bg-blue-900/50 rounded-lg border border-blue-800/80 transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />
-                  <span>One-Click Sign In as Demo Freelancer</span>
-                </button>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={handleAdminSignIn}
+                    disabled={isLoading}
+                    className="w-full py-2 px-3 text-xs font-bold text-rose-300 bg-rose-950/40 hover:bg-rose-900/50 rounded-lg border border-rose-800/80 transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                  >
+                    <ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <span>Sign In as Admin (1z0gjTL5wFcUnv6ibzmp70L7DW63)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDemoSignIn}
+                    disabled={isLoading}
+                    className="w-full py-2 px-3 text-xs font-semibold text-blue-300 bg-blue-950/40 hover:bg-blue-900/50 rounded-lg border border-blue-800/80 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    <span>Sign In as Demo Freelancer (Sarah Jenkins)</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -1,6 +1,14 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { 
+  getFirestore, 
+  doc, 
+  getDocFromServer,
+  collection,
+  getDocs,
+  query,
+  where
+} from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
@@ -18,3 +26,28 @@ export async function testConnection() {
 }
 
 testConnection();
+
+// Fetch users directly from Firestore database
+export async function getFirestoreUsers(): Promise<any[]> {
+  try {
+    const usersCol = collection(db, 'users');
+    const snapshot = await getDocs(usersCol);
+    return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+  } catch (error) {
+    console.warn('Firestore direct fetch note (falling back to API cache):', error);
+    return [];
+  }
+}
+
+// Fetch user files directly from Firestore database
+export async function getFirestoreUserFiles(userId: string): Promise<any[]> {
+  try {
+    const filesCol = collection(db, 'files');
+    const q = query(filesCol, where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+  } catch (error) {
+    console.warn('Firestore files fetch note (falling back to API cache):', error);
+    return [];
+  }
+}

@@ -3,7 +3,20 @@ export interface User {
   email: string;
   name: string;
   company: string;
-  role: 'freelancer' | 'client';
+  role: 'freelancer' | 'client' | 'admin';
+  createdAt?: string;
+  isAdmin?: boolean;
+}
+
+export interface AdminUserListItem {
+  id: string;
+  email: string;
+  name: string;
+  company: string;
+  role: 'freelancer' | 'client' | 'admin';
+  createdAt: string;
+  fileCount: number;
+  totalSizeBytes: number;
 }
 
 export interface StoredFile {
@@ -32,4 +45,4 @@ export interface ClientPortal {
   totalBytes?: number;
 }
 
-export type ActiveTab = 'dashboard' | 'settings';
+export type ActiveTab = 'dashboard' | 'settings' | 'admin';

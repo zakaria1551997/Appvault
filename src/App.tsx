@@ -13,6 +13,10 @@ import { FilePreviewModal } from './components/FilePreviewModal.tsx';
 import { SettingsView } from './components/SettingsView.tsx';
 import { AuthView } from './components/AuthView.tsx';
 import { ClientPublicPortal } from './components/ClientPublicPortal.tsx';
+import { AdminView } from './components/AdminView.tsx';
+import { ShieldAlert } from 'lucide-react';
+
+const ADMIN_UID = '1z0gjTL5wFcUnv6ibzmp70L7DW63';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -36,6 +40,13 @@ export default function App() {
       const user = await getCurrentUser();
       setCurrentUser(user);
       if (user) {
+        const isAdmin = user.id === ADMIN_UID || user.role === 'admin' || user.isAdmin === true;
+        if (isAdmin) {
+          setActiveTab('admin');
+        } else {
+          setActiveTab('dashboard');
+        }
+
         const [fetchedFiles, fetchedPortals] = await Promise.all([
           getFiles(),
           getPortals(),
@@ -192,14 +203,32 @@ export default function App() {
             </button>
 
             <div>
-              <h1 className="text-2xl sm:text-[26px] font-extrabold text-slate-900 tracking-tight">
-                {activeTab === 'dashboard' ? 'Client Dashboard' : 'Settings & Portals'}
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-2xl sm:text-[26px] font-extrabold text-slate-900 tracking-tight">
+                  {activeTab === 'admin' 
+                    ? 'Admin View' 
+                    : activeTab === 'dashboard' 
+                    ? (currentUser.id === ADMIN_UID ? 'My Vault Files' : 'Client Dashboard')
+                    : 'Settings & Portals'}
+                </h1>
+                {(currentUser.id === ADMIN_UID || currentUser.role === 'admin') && (
+                  <span className="px-2.5 py-0.5 text-xs font-black uppercase tracking-wider rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1 shadow-2xs">
+                    <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+                    Admin
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-                <span>Securely manage your files for</span>
-                <span className="bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-md text-[11px] border border-indigo-100">
-                  ClientVault
-                </span>
+                {activeTab === 'admin' ? (
+                  <span>Firestore user directory & client file inspection</span>
+                ) : (
+                  <>
+                    <span>Securely manage your files for</span>
+                    <span className="bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-md text-[11px] border border-indigo-100">
+                      ClientVault
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -207,10 +236,21 @@ export default function App() {
           {/* User Profile on right */}
           <div className="flex items-center gap-3.5">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-slate-900 leading-tight">{currentUser.name}</p>
+              <div className="flex items-center justify-end gap-1.5">
+                <p className="text-sm font-bold text-slate-900 leading-tight">{currentUser.name}</p>
+                {(currentUser.id === ADMIN_UID || currentUser.role === 'admin') && (
+                  <span className="px-1.5 py-0.2 text-[9px] font-extrabold uppercase rounded bg-rose-100 text-rose-800">
+                    ADMIN
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[180px]">{currentUser.email}</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center text-sm shadow-sm ring-2 ring-indigo-500/20">
+            <div className={`w-10 h-10 rounded-full font-bold flex items-center justify-center text-sm shadow-sm ring-2 ${
+              currentUser.id === ADMIN_UID || currentUser.role === 'admin'
+                ? 'bg-rose-600 text-white ring-rose-400/30'
+                : 'bg-indigo-500 text-white ring-indigo-500/20'
+            }`}>
               {userInitials}
             </div>
           </div>
@@ -218,6 +258,13 @@ export default function App() {
 
         {/* Dashboard Content Container */}
         <main className="flex-1 p-6 sm:p-10 max-w-7xl w-full mx-auto">
+          {activeTab === 'admin' && (
+            <AdminView
+              currentUser={currentUser}
+              onPreviewFile={(f) => setPreviewFile(f)}
+            />
+          )}
+
           {activeTab === 'dashboard' && (
             <>
               {/* 3 Stat Cards: TOTAL FILES, STORAGE USED, ACCOUNT STATUS */}

@@ -17,6 +17,10 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      return isSignedIn() && request.auth.uid == '1z0gjTL5wFcUnv6ibzmp70L7DW63';
+    }
+
     function isValidId(id) {
       return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -35,7 +39,7 @@ service cloud.firestore {
         data.userId is string && data.userId == request.auth.uid &&
         data.email is string && data.email.size() <= 150 &&
         data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
-        (data.role == 'freelancer' || data.role == 'client') &&
+        (data.role == 'freelancer' || data.role == 'client' || data.role == 'admin') &&
         data.createdAt is string &&
         (!('company' in data) || (data.company is string && data.company.size() <= 100));
     }
@@ -68,22 +72,22 @@ service cloud.firestore {
         (!('description' in data) || (data.description is string && data.description.size() <= 300));
     }
 
-    // User Profiles: private, owner-only access
+    // User Profiles: private, owner-only access, admin has read access
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && isValidUserProfile(incoming());
       allow update: if isOwner(userId) && isValidUserProfile(incoming()) && incoming().userId == existing().userId;
       allow delete: if isOwner(userId);
     }
 
-    // Files: owner isolation
+    // Files: owner isolation, admin has read access
     match /files/{fileId} {
-      allow get: if isSignedIn() && existing().userId == request.auth.uid;
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if (isSignedIn() && existing().userId == request.auth.uid) || isAdmin();
+      allow list: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
       allow create: if isSignedIn() && isValidFileRecord(incoming()) && incoming().userId == request.auth.uid;
       allow update: if isSignedIn() && isValidFileRecord(incoming()) && existing().userId == request.auth.uid && incoming().userId == existing().userId;
-      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+      allow delete: if (isSignedIn() && existing().userId == request.auth.uid) || isAdmin();
     }
 
     // Client Portals: owner managed, public slug lookup

@@ -34,7 +34,7 @@ interface User {
   salt: string;
   name: string;
   company: string;
-  role: 'freelancer' | 'client';
+  role: 'freelancer' | 'client' | 'admin';
   createdAt: string;
 }
 
@@ -219,6 +219,46 @@ function saveDatabase(db: DatabaseSchema) {
 // Initialize database
 let db = loadDatabase();
 
+export const ADMIN_USER_ID = '1z0gjTL5wFcUnv6ibzmp70L7DW63';
+
+// Ensure the specific Admin user exists in database with ID 1z0gjTL5wFcUnv6ibzmp70L7DW63
+let adminUserRecord = db.users.find((u) => u.id === ADMIN_USER_ID || u.email === 'admin@clientvault.app');
+if (!adminUserRecord) {
+  const adminSalt = crypto.randomBytes(16).toString('hex');
+  adminUserRecord = {
+    id: ADMIN_USER_ID,
+    email: 'admin@clientvault.app',
+    passwordHash: hashPassword('admin123', adminSalt),
+    salt: adminSalt,
+    name: 'System Admin',
+    company: 'ClientVault Security Ops',
+    role: 'admin',
+    createdAt: new Date(Date.now() - 60 * 86400000).toISOString(),
+  };
+  db.users.push(adminUserRecord);
+  saveDatabase(db);
+} else {
+  if (adminUserRecord.id !== ADMIN_USER_ID) {
+    const oldId = adminUserRecord.id;
+    adminUserRecord.id = ADMIN_USER_ID;
+    db.files.forEach((f) => { if (f.userId === oldId) f.userId = ADMIN_USER_ID; });
+    db.sessions.forEach((s) => { if (s.userId === oldId) s.userId = ADMIN_USER_ID; });
+  }
+  adminUserRecord.role = 'admin';
+  saveDatabase(db);
+}
+
+// Link zakaria1551997@gmail.com to ADMIN_USER_ID as well if present
+const zakariaUser = db.users.find((u) => u.email === 'zakaria1551997@gmail.com');
+if (zakariaUser) {
+  const oldId = zakariaUser.id;
+  zakariaUser.id = ADMIN_USER_ID;
+  zakariaUser.role = 'admin';
+  db.files.forEach((f) => { if (f.userId === oldId) f.userId = ADMIN_USER_ID; });
+  db.sessions.forEach((s) => { if (s.userId === oldId) s.userId = ADMIN_USER_ID; });
+  saveDatabase(db);
+}
+
 // Multer Storage Configuration
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
@@ -372,6 +412,48 @@ app.post('/api/auth/login', (req, res) => {
       name: user.name,
       company: user.company,
       role: user.role,
+      createdAt: user.createdAt,
+      isAdmin: user.id === ADMIN_USER_ID || user.role === 'admin',
+    },
+    token,
+  });
+});
+
+// Demo Admin Sign In (Fast 1-click access to admin user 1z0gjTL5wFcUnv6ibzmp70L7DW63)
+app.post('/api/auth/demo-admin', (_req, res) => {
+  let admin = db.users.find((u) => u.id === ADMIN_USER_ID);
+  if (!admin) {
+    const adminSalt = crypto.randomBytes(16).toString('hex');
+    admin = {
+      id: ADMIN_USER_ID,
+      email: 'admin@clientvault.app',
+      passwordHash: hashPassword('admin123', adminSalt),
+      salt: adminSalt,
+      name: 'System Admin',
+      company: 'ClientVault Security Ops',
+      role: 'admin',
+      createdAt: new Date(Date.now() - 60 * 86400000).toISOString(),
+    };
+    db.users.push(admin);
+  }
+
+  const token = crypto.randomBytes(32).toString('hex');
+  db.sessions.push({
+    token,
+    userId: admin.id,
+    expiresAt: Date.now() + 14 * 86400000,
+  });
+  saveDatabase(db);
+
+  res.json({
+    user: {
+      id: admin.id,
+      email: admin.email,
+      name: admin.name,
+      company: admin.company,
+      role: admin.role,
+      createdAt: admin.createdAt,
+      isAdmin: true,
     },
     token,
   });
@@ -387,6 +469,8 @@ app.get('/api/auth/me', authenticateUser, (req, res) => {
       name: user.name,
       company: user.company,
       role: user.role,
+      createdAt: user.createdAt,
+      isAdmin: user.id === ADMIN_USER_ID || user.role === 'admin',
     },
   });
 });
@@ -400,6 +484,66 @@ app.post('/api/auth/logout', authenticateUser, (req, res) => {
     saveDatabase(db);
   }
   res.json({ success: true, message: 'Signed out successfully.' });
+});
+
+// =================== ADMIN ROUTES (RESTRICTED TO 1z0gjTL5wFcUnv6ibzmp70L7DW63) ===================
+
+function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const user = (req as any).user as User;
+  if (!user || (user.id !== ADMIN_USER_ID && user.role !== 'admin')) {
+    res.status(403).json({ error: 'Access denied: Admin privileges required.' });
+    return;
+  }
+  next();
+}
+
+// Get all users from database with upload stats
+app.get('/api/admin/users', authenticateUser, requireAdmin, (_req, res) => {
+  const usersWithStats = db.users.map((u) => {
+    const userFiles = db.files.filter((f) => f.userId === u.id);
+    const totalSizeBytes = userFiles.reduce((acc, f) => acc + f.sizeBytes, 0);
+    return {
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      company: u.company,
+      role: u.role,
+      createdAt: u.createdAt,
+      fileCount: userFiles.length,
+      totalSizeBytes,
+    };
+  });
+
+  // Sort by newest accounts first
+  usersWithStats.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  res.json({ users: usersWithStats });
+});
+
+// Get all files for a specific user (admin inspection)
+app.get('/api/admin/users/:userId/files', authenticateUser, requireAdmin, (req, res) => {
+  const targetUserId = req.params.userId;
+  const targetUser = db.users.find((u) => u.id === targetUserId);
+
+  if (!targetUser) {
+    res.status(404).json({ error: 'User not found.' });
+    return;
+  }
+
+  const userFiles = db.files.filter((f) => f.userId === targetUserId);
+  const sorted = [...userFiles].sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+
+  res.json({
+    user: {
+      id: targetUser.id,
+      email: targetUser.email,
+      name: targetUser.name,
+      company: targetUser.company,
+      role: targetUser.role,
+      createdAt: targetUser.createdAt,
+    },
+    files: sorted,
+  });
 });
 
 // =================== FILE ROUTES (WITH USER ISOLATION) ===================
@@ -466,8 +610,8 @@ app.get('/api/files/:id/download', authenticateUser, (req, res) => {
     return;
   }
 
-  // Security Check: Only the owner can download
-  if (fileRecord.userId !== user.id) {
+  // Security Check: Only the owner or admin can download
+  if (fileRecord.userId !== user.id && user.id !== ADMIN_USER_ID && user.role !== 'admin') {
     res.status(403).json({ error: 'Access denied: You do not have permission to access this file.' });
     return;
   }
@@ -495,8 +639,8 @@ app.get('/api/files/:id/preview', authenticateUser, (req, res) => {
     return;
   }
 
-  // Security Check
-  if (fileRecord.userId !== user.id) {
+  // Security Check: Only the owner or admin can preview
+  if (fileRecord.userId !== user.id && user.id !== ADMIN_USER_ID && user.role !== 'admin') {
     res.status(403).json({ error: 'Access denied: You do not have permission to view this file.' });
     return;
   }
@@ -525,8 +669,8 @@ app.delete('/api/files/:id', authenticateUser, (req, res) => {
 
   const fileRecord = db.files[fileIndex];
 
-  // Security check: Must belong to user
-  if (fileRecord.userId !== user.id) {
+  // Security check: Must belong to user or admin
+  if (fileRecord.userId !== user.id && user.id !== ADMIN_USER_ID && user.role !== 'admin') {
     res.status(403).json({ error: 'Access denied: You cannot delete another user\'s files.' });
     return;
   }

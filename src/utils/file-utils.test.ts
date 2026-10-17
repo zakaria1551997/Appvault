@@ -21,11 +21,14 @@ test('getFileCategory identifies categories accurately', () => {
   assert.equal(getFileCategory('application/octet-stream', 'unknown.bin'), 'other');
 });
 
-test('canAccessFile enforces user ownership isolation', () => {
+test('canAccessFile enforces user ownership isolation and allows admin access', () => {
   assert.equal(canAccessFile('user-1', 'user-1'), true);
   assert.equal(canAccessFile('user-1', 'user-2'), false);
   assert.equal(canAccessFile('', 'user-1'), false);
   assert.equal(canAccessFile('user-1', ''), false);
+  // Admin user ID [1z0gjTL5wFcUnv6ibzmp70L7DW63] has full access
+  assert.equal(canAccessFile('user-1', '1z0gjTL5wFcUnv6ibzmp70L7DW63'), true);
+  assert.equal(canAccessFile('user-2', 'user-3', true), true);
 });
 
 test('filterFiles filters by text query, category, and client', () => {

@@ -1,4 +1,4 @@
-import { User, StoredFile, ClientPortal } from './types.ts';
+import { User, StoredFile, ClientPortal, AdminUserListItem } from './types.ts';
 
 const TOKEN_KEY = 'clientvault_token';
 
@@ -168,4 +168,22 @@ export async function uploadPublicPortalFiles(
     method: 'POST',
     body: formData,
   });
+}
+
+export async function loginAsDemoAdmin(): Promise<{ user: User; token: string }> {
+  const data = await request<{ user: User; token: string }>('/api/auth/demo-admin', {
+    method: 'POST',
+  });
+  setStoredToken(data.token);
+  return data;
+}
+
+export async function getAdminUsers(): Promise<AdminUserListItem[]> {
+  const data = await request<{ users: AdminUserListItem[] }>('/api/admin/users');
+  return data.users;
+}
+
+export async function getAdminUserFiles(userId: string): Promise<{ user: User; files: StoredFile[] }> {
+  const data = await request<{ user: User; files: StoredFile[] }>(`/api/admin/users/${userId}/files`);
+  return data;
 }
