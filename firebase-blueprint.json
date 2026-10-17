@@ -1,0 +1,153 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile information and studio settings",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The Firebase Auth UID of the user"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Full name of the designer or freelancer"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Studio, business, or company name"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["freelancer", "client"],
+          "description": "Role of the user in ClientVault"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account creation timestamp"
+        }
+      },
+      "required": ["userId", "email", "name", "role", "createdAt"]
+    },
+    "FileRecord": {
+      "title": "FileRecord",
+      "description": "Metadata for an uploaded client file",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the file document"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner freelancer UID"
+        },
+        "originalName": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Original filename provided during upload"
+        },
+        "storageName": {
+          "type": "string",
+          "description": "Disk or storage location filename"
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "MIME content type of the file"
+        },
+        "sizeBytes": {
+          "type": "number",
+          "description": "File size in bytes"
+        },
+        "uploadedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when file was uploaded"
+        },
+        "clientName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Client or project name associated with this file"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Optional notes or instructions"
+        },
+        "portalSlug": {
+          "type": "string",
+          "description": "Slug of the associated client portal"
+        },
+        "downloadCount": {
+          "type": "number",
+          "description": "Number of times this file has been downloaded"
+        }
+      },
+      "required": ["id", "userId", "originalName", "sizeBytes", "uploadedAt", "clientName"]
+    },
+    "ClientPortal": {
+      "title": "ClientPortal",
+      "description": "Client portal definition for sharing dedicated upload links",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique portal identifier"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner freelancer UID"
+        },
+        "clientName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Name of the client organization or person"
+        },
+        "clientEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Optional contact email of the client"
+        },
+        "slug": {
+          "type": "string",
+          "maxLength": 80,
+          "pattern": "^[a-z0-9\\-]+$",
+          "description": "URL slug for client access"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Welcome message or instructions for the client"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Portal creation timestamp"
+        }
+      },
+      "required": ["id", "userId", "clientName", "slug", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Private user profiles restricted to the owner"
+    },
+    "/files/{fileId}": {
+      "schema": "FileRecord",
+      "description": "Client files stored and owned by the freelancer"
+    },
+    "/portals/{portalId}": {
+      "schema": "ClientPortal",
+      "description": "Client upload portals configured by the freelancer"
+    }
+  }
+}

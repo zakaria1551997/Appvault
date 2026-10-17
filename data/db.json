@@ -1,0 +1,154 @@
+{
+  "users": [
+    {
+      "id": "user_sarah_101",
+      "email": "sarah@clientvault.app",
+      "passwordHash": "f9fa5f9902128836d411c3d6a6d49a21135d327d6879bdde916d7aac1feeabb54a96443ffff6089c9018c244b0a7d3b9a19d55c5c2ea9ed1b05dc006f74c8ce4",
+      "salt": "4bfd2f9fcc1416c08e5ce7919df2b44f",
+      "name": "Sarah Jenkins",
+      "company": "Apex Design & Freelance",
+      "role": "freelancer",
+      "createdAt": "2026-09-17T10:52:09.546Z"
+    }
+  ],
+  "files": [
+    {
+      "id": "file_1_1792234329547",
+      "userId": "user_sarah_101",
+      "originalName": "Brand_Identity_Guidelines_v2.pdf",
+      "storageName": "file_1_1792234329547_Brand_Identity_Guidelines_v2.pdf",
+      "mimeType": "application/pdf",
+      "sizeBytes": 120,
+      "uploadedAt": "2026-10-16T10:52:09.548Z",
+      "clientName": "Acme Corp",
+      "notes": "Final approved typography, color codes and logo usage specs.",
+      "portalSlug": "acme-corp",
+      "downloadCount": 1
+    },
+    {
+      "id": "file_2_1792234329548",
+      "userId": "user_sarah_101",
+      "originalName": "Mobile_App_Wireframes.png",
+      "storageName": "file_2_1792234329548_Mobile_App_Wireframes.png",
+      "mimeType": "image/png",
+      "sizeBytes": 88,
+      "uploadedAt": "2026-10-15T10:52:09.548Z",
+      "clientName": "Bloom Studio",
+      "notes": "High-fidelity dashboard screens for mobile viewport review.",
+      "portalSlug": "bloom-studio",
+      "downloadCount": 3
+    },
+    {
+      "id": "file_3_1792234329548",
+      "userId": "user_sarah_101",
+      "originalName": "Q3_Project_Scope_Contract.docx",
+      "storageName": "file_3_1792234329548_Q3_Project_Scope_Contract.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "sizeBytes": 53,
+      "uploadedAt": "2026-10-14T10:52:09.548Z",
+      "clientName": "Acme Corp",
+      "notes": "Signed contract with milestone schedules and deliverable dates.",
+      "portalSlug": "acme-corp",
+      "downloadCount": 5
+    },
+    {
+      "id": "file_5_1792234329548",
+      "userId": "user_sarah_101",
+      "originalName": "Product_Launch_Feedback_Notes.txt",
+      "storageName": "file_5_1792234329548_Product_Launch_Feedback_Notes.txt",
+      "mimeType": "text/plain",
+      "sizeBytes": 143,
+      "uploadedAt": "2026-10-12T10:52:09.548Z",
+      "clientName": "Bloom Studio",
+      "notes": "Stakeholder notes collected during last Tuesday client sync.",
+      "portalSlug": "bloom-studio",
+      "downloadCount": 9
+    }
+  ],
+  "portals": [
+    {
+      "id": "portal_acme",
+      "userId": "user_sarah_101",
+      "clientName": "Acme Corp",
+      "clientEmail": "contact@acmecorp.com",
+      "slug": "acme-corp",
+      "description": "Dedicated upload vault for Acme Corporation rebrand collateral.",
+      "createdAt": "2026-09-22T10:52:09.548Z"
+    },
+    {
+      "id": "portal_bloom",
+      "userId": "user_sarah_101",
+      "clientName": "Bloom Studio",
+      "clientEmail": "design@bloomstudio.io",
+      "slug": "bloom-studio",
+      "description": "Secure file transfer portal for Bloom Studio UI/UX design deliverables.",
+      "createdAt": "2026-10-02T10:52:09.548Z"
+    },
+    {
+      "id": "portal_kitsune",
+      "userId": "user_sarah_101",
+      "clientName": "Kitsune Roasters",
+      "clientEmail": "hello@kitsuneroasters.com",
+      "slug": "kitsune-roasters",
+      "description": "Print production packaging and label assets exchange.",
+      "createdAt": "2026-10-12T10:52:09.548Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "72171faba9630e45c90569e2ef8e45232f8d38ec22015931b96b1275050dd734",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793443959287
+    },
+    {
+      "token": "1c7f80da5bced100cf192e0d9e47d5833c2f1c4b861f599fc8a54715b3c40f01",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793443991876
+    },
+    {
+      "token": "6fd723ef6e5fdac9af7314ddc269d9e37391f409ded175c7853d0562a744813f",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793444048442
+    },
+    {
+      "token": "c71b947ca2457f25a17e4640922cf1d14f1cb723c7b88b36d4c54ba9566ad72a",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793444084737
+    },
+    {
+      "token": "35ece1d0f09eee77d2f37756ceb5eedcd6503d1cca4de1e3d102fe81b4ef2700",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793444113125
+    },
+    {
+      "token": "ae83a9ce7769da0adcbbb782f02439a60ec5a65ceeba25b9c8264c48aaaec3e7",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793444146165
+    },
+    {
+      "token": "1aea809a3a789863a51c697a850e76e99fbd9c8e525f26220e163b96722e39af",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793444168582
+    },
+    {
+      "token": "1594879b1688c76789cb2829e216d8db69214819144a2930e540f5c812fb5026",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793467947977
+    },
+    {
+      "token": "0d948cf2efd26a44047bc012c59a846bb4674284b13160e646b1a26fdb6bc3f5",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793468373413
+    },
+    {
+      "token": "df4bc87c623764d87c3836dd152bf7c29892a3673ebb325de797e3cb206cdb68",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793468533663
+    },
+    {
+      "token": "fcf690398f42bc50d31db2613594026a0ff24785d4fb91a137e7a9d4fecd3400",
+      "userId": "user_sarah_101",
+      "expiresAt": 1793468562176
+    }
+  ]
+}

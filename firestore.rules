@@ -1,0 +1,103 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['userId', 'email', 'name', 'role', 'createdAt']) &&
+        data.keys().hasOnly(['userId', 'email', 'name', 'company', 'role', 'createdAt']) &&
+        data.userId is string && data.userId == request.auth.uid &&
+        data.email is string && data.email.size() <= 150 &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+        (data.role == 'freelancer' || data.role == 'client') &&
+        data.createdAt is string &&
+        (!('company' in data) || (data.company is string && data.company.size() <= 100));
+    }
+
+    function isValidFileRecord(data) {
+      return data.keys().hasAll(['id', 'userId', 'originalName', 'sizeBytes', 'uploadedAt', 'clientName']) &&
+        data.keys().hasOnly(['id', 'userId', 'originalName', 'storageName', 'mimeType', 'sizeBytes', 'uploadedAt', 'clientName', 'notes', 'portalSlug', 'downloadCount']) &&
+        data.id is string && isValidId(data.id) &&
+        data.userId is string && data.userId == request.auth.uid &&
+        data.originalName is string && data.originalName.size() > 0 && data.originalName.size() <= 255 &&
+        data.sizeBytes is number && data.sizeBytes >= 0 &&
+        data.uploadedAt is string &&
+        data.clientName is string && data.clientName.size() > 0 && data.clientName.size() <= 100 &&
+        (!('storageName' in data) || (data.storageName is string && data.storageName.size() <= 300)) &&
+        (!('mimeType' in data) || (data.mimeType is string && data.mimeType.size() <= 100)) &&
+        (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
+        (!('portalSlug' in data) || (data.portalSlug is string && data.portalSlug.size() <= 100)) &&
+        (!('downloadCount' in data) || (data.downloadCount is number && data.downloadCount >= 0));
+    }
+
+    function isValidClientPortal(data) {
+      return data.keys().hasAll(['id', 'userId', 'clientName', 'slug', 'createdAt']) &&
+        data.keys().hasOnly(['id', 'userId', 'clientName', 'clientEmail', 'slug', 'description', 'createdAt']) &&
+        data.id is string && isValidId(data.id) &&
+        data.userId is string && data.userId == request.auth.uid &&
+        data.clientName is string && data.clientName.size() > 0 && data.clientName.size() <= 100 &&
+        data.slug is string && data.slug.size() > 0 && data.slug.size() <= 80 && data.slug.matches('^[a-z0-9\\-]+$') &&
+        data.createdAt is string &&
+        (!('clientEmail' in data) || (data.clientEmail is string && data.clientEmail.size() <= 150)) &&
+        (!('description' in data) || (data.description is string && data.description.size() <= 300));
+    }
+
+    // User Profiles: private, owner-only access
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(incoming());
+      allow update: if isOwner(userId) && isValidUserProfile(incoming()) && incoming().userId == existing().userId;
+      allow delete: if isOwner(userId);
+    }
+
+    // Files: owner isolation
+    match /files/{fileId} {
+      allow get: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidFileRecord(incoming()) && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && isValidFileRecord(incoming()) && existing().userId == request.auth.uid && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Client Portals: owner managed, public slug lookup
+    match /portals/{portalId} {
+      allow get: if true;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidClientPortal(incoming()) && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && isValidClientPortal(incoming()) && existing().userId == request.auth.uid && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Connection test document
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
